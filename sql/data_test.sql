@@ -47,3 +47,10 @@ SELECT
                 ORDER BY annee DESC, mois DESC
 
 UPDATE `finance_Historique_Pret` SET interet = 40 WHERE id = 1;
+
+SELECT p.id AS pret_id,c.nom AS client_nom,tp.libelle AS type_pret,p.montant_pret,tp.taux,p.date_pret,p.date_fin
+              FROM finance_Pret p
+              JOIN finance_Type_Pret tp ON p.id_type_pret = tp.id
+              JOIN finance_Client_Pret cp ON p.id = cp.id_pret
+              JOIN finance_Clients c ON cp.id_client = c.id
+              ORDER BY p.date_pret DESC

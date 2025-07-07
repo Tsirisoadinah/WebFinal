@@ -30,22 +30,22 @@ class Etablissement
     public static function updateFonds($id_ef, $montant)
     {
         $db = getDB();
-            $montant_actuel = self::getFondsByIdEtablissement($id_ef);
+        $montant_actuel = self::getFondsByIdEtablissement($id_ef);
 
-            if ($montant_actuel == 0) {
-                // Nouvelle entrée
-                $stmt = $db->prepare("INSERT INTO finance_Etablissement_Financier (id, fonds) VALUES (?, ?)");
-                $stmt->execute([$id_ef, $montant]);
-            } else {
-                // Mise à jour du fonds existant
-                $nouveau_fonds = $montant_actuel + $montant;
-                $stmt = $db->prepare("UPDATE finance_Etablissement_Financier SET fonds = ? WHERE id = ?");
-                $stmt->execute([$nouveau_fonds, $id_ef]);
-            }
+        if ($montant_actuel == 0) {
+            // Nouvelle entrée
+            $stmt = $db->prepare("INSERT INTO finance_Etablissement_Financier (id, fonds) VALUES (?, ?)");
+            $stmt->execute([$id_ef, $montant]);
+        } else {
+            // Mise à jour du fonds existant
+            $nouveau_fonds = $montant_actuel + $montant;
+            $stmt = $db->prepare("UPDATE finance_Etablissement_Financier SET fonds = ? WHERE id = ?");
+            $stmt->execute([$nouveau_fonds, $id_ef]);
+        }
 
-            // Enregistrement de la transaction après mise à jour
-            self::insertFondsIntoTransaction($id_ef, 1, $montant);
-
-        
+        // Enregistrement de la transaction après mise à jour
+        self::insertFondsIntoTransaction($id_ef, 1, $montant);
     }
+
+ 
 }
