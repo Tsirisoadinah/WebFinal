@@ -50,12 +50,12 @@ CREATE TABLE finance_Transaction (
    id INTEGER PRIMARY KEY AUTO_INCREMENT,
    id_ef INTEGER,
    id_client INTEGER,
-   id_pret INTEGER,
+   id_type_transaction INTEGER,
    date_transaction DATE,
    montant INTEGER,
    FOREIGN KEY(id_ef) REFERENCES finance_Etablissement_Financier(id),
    FOREIGN KEY(id_client) REFERENCES finance_Clients(id),
-   FOREIGN KEY(id_pret) REFERENCES finance_Pret(id)
+   FOREIGN KEY(id_type_transaction) REFERENCES finance_Type_Transaction(id)
 );
 
 CREATE TABLE finance_Client_Pret (
