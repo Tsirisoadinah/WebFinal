@@ -1,55 +1,239 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion de Type Prêt</title>
     <style>
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        button { cursor: pointer; }
+        body {
+            background-color: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            font-family: Arial, sans-serif;
+            padding: 2rem 1rem;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1000px;
+        }
+        h1 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        h3 {
+            font-size: 1.25rem;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        label {
+            font-size: 0.9rem;
+            color: #555;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="hidden"] {
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+        }
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        button.secondary {
+            background-color: #6c757d;
+        }
+        button.secondary:hover {
+            background-color: #545b62;
+        }
+        button.danger {
+            background-color: #dc3545;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.9rem;
+        }
+        button.danger:hover {
+            background-color: #c82333;
+        }
+        button.edit {
+            background-color: #28a745;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.9rem;
+        }
+        button.edit:hover {
+            background-color: #218838;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: 600;
+            color: #333;
+        }
+        td {
+            color: #555;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+        #message {
+            margin-top: 1rem;
+            text-align: center;
+            color: #28a745;
+            font-size: 0.9rem;
+            display: none;
+            padding: 0.75rem;
+            border-radius: 4px;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+        .message-error {
+            color: #721c24 !important;
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb !important;
+        }
     </style>
 </head>
 <body>
-    <h1>Gestion de Type Prêt</h1>
-    <div>
-        <input type="hidden" id="id">
-        <label for="libelle">Libelle :</label>
-        <input type="text" id="libelle" name="libelle" placeholder="Ex : Prêt Étudiant">
-        <label for="taux">Taux :</label>
-        <input type="number" id="taux" name="taux" placeholder="Ex: 18.3" step="0.01">
-        <label for="duree_max">Durée maximale (mois) :</label>
-        <input type="number" id="duree_max" name="duree_max" placeholder="Durée en mois">
-        <button onclick="ajouterOuModifier()" id="actionButton">Ajouter</button>
-        <button onclick="resetForm()" id="resetButton">Annuler</button>
+    <div class="container">
+        <h1>Gestion de Type Prêt</h1>
+        
+        <div class="form-section">
+            <h3>Ajouter / Modifier un type de prêt</h3>
+            <input type="hidden" id="id">
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="libelle">Libellé :</label>
+                    <input type="text" id="libelle" name="libelle" placeholder="Ex : Prêt Étudiant" required>
+                </div>
+                <div class="form-group">
+                    <label for="taux">Taux (%) :</label>
+                    <input type="number" id="taux" name="taux" placeholder="Ex: 18.3" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="duree_max">Durée maximale (mois) :</label>
+                    <input type="number" id="duree_max" name="duree_max" placeholder="Durée en mois" min="1" required>
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button onclick="ajouterOuModifier()" id="actionButton">Ajouter</button>
+                <button onclick="resetForm()" id="resetButton" class="secondary">Annuler</button>
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <table id="table-typepret">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Libellé</th>
+                        <th>Taux (%)</th>
+                        <th>Durée maximale (mois)</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        
+        <div id="message"></div>
     </div>
-    <table id="table-typepret">
-        <thead>
-            <tr>
-                <th>ID</th><th>Libelle</th><th>Taux</th><th>Durée maximale (mois)</th><th>Actions</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
 
     <script>
         const apiBase = "http://localhost/WebFinal/ws";
-        function ajax(method, url, data, callback) {
-            const xhr = new XMLHttpRequest();
-            xhr.open(method, apiBase + url, true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.onreadystatechange = () => {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        callback(JSON.parse(xhr.responseText));
-                    } else {
-                        console.error('Erreur:', xhr.status, xhr.statusText);
-                    }
-                }
-            };
-            xhr.send(data);
+        
+function ajax(method, url, data, callback) {
+    const xhr = new XMLHttpRequest();
+    xhr.open(method, apiBase + url, true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200 || xhr.status === 201) { // Ajoutez le code 201 ici
+                callback(JSON.parse(xhr.responseText));
+            } else {
+                console.error('Erreur:', xhr.status, xhr.statusText);
+                afficherMessage("Erreur lors de la requête", true);
+            }
         }
+    };
+    xhr.send(data);
+}
 
         function chargerTypePret() {
             ajax("GET", "/typepret", null, (data) => {
@@ -63,8 +247,10 @@
                         <td>${e.taux}%</td>
                         <td>${e.duree_max}</td>
                         <td>
-                            <button onclick='remplirFormulaire(${JSON.stringify(e)})'>✏️</button>
-                            <button onclick='supprimerTypePret(${e.id})'>🗑️</button>
+                            <div class="actions">
+                                <button onclick='remplirFormulaire(${JSON.stringify(e)})' class="edit">✏️ Modifier</button>
+                                <button onclick='supprimerTypePret(${e.id})' class="danger">🗑️ Supprimer</button>
+                            </div>
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -82,12 +268,22 @@
 
         function ajouterOuModifier() {
             const id = document.getElementById("id").value;
-            const libelle = document.getElementById("libelle").value;
+            const libelle = document.getElementById("libelle").value.trim();
             const taux = document.getElementById("taux").value;
             const duree_max = document.getElementById("duree_max").value;
 
             if (!libelle || !taux || !duree_max) {
-                alert("Veuillez remplir tous les champs");
+                afficherMessage("Veuillez remplir tous les champs", true);
+                return;
+            }
+
+            if (parseFloat(taux) < 0) {
+                afficherMessage("Le taux doit être positif", true);
+                return;
+            }
+
+            if (parseInt(duree_max) < 1) {
+                afficherMessage("La durée maximale doit être d'au moins 1 mois", true);
                 return;
             }
 
@@ -95,11 +291,13 @@
 
             if (id) {
                 ajax("PUT", `/typepret/${id}`, data, () => {
+                    afficherMessage("Type de prêt modifié avec succès !");
                     chargerTypePret();
                     resetForm();
                 });
             } else {
                 ajax("POST", "/typepret", data, () => {
+                    afficherMessage("Type de prêt ajouté avec succès !");
                     chargerTypePret();
                     resetForm();
                 });
@@ -109,6 +307,7 @@
         function supprimerTypePret(id) {
             if (confirm("Êtes-vous sûr de vouloir supprimer ce type de prêt ?")) {
                 ajax("DELETE", `/typepret/${id}`, null, () => {
+                    afficherMessage("Type de prêt supprimé avec succès !");
                     chargerTypePret();
                 });
             }
@@ -122,6 +321,21 @@
             document.getElementById("actionButton").textContent = "Ajouter";
         }
 
+        function afficherMessage(texte, erreur = false) {
+            const message = document.getElementById("message");
+            message.style.display = "block";
+            message.textContent = texte;
+            
+            if (erreur) {
+                message.classList.add("message-error");
+            } else {
+                message.classList.remove("message-error");
+            }
+            
+            setTimeout(() => {
+                message.style.display = "none";
+            }, 3000);
+        }
         chargerTypePret();
     </script>
 </body>
