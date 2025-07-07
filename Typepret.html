@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion de Type Prêt</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        button { cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Gestion de Type Prêt</h1>
+    <div>
+        <input type="hidden" id="id">
+        <label for="libelle">Libelle :</label>
+        <input type="text" id="libelle" name="libelle" placeholder="Ex : Prêt Étudiant">
+        <label for="taux">Taux :</label>
+        <input type="number" id="taux" name="taux" placeholder="Ex: 18.3" step="0.01">
+        <label for="duree_max">Durée maximale (mois) :</label>
+        <input type="number" id="duree_max" name="duree_max" placeholder="Durée en mois">
+        <button onclick="ajouterOuModifier()" id="actionButton">Ajouter</button>
+        <button onclick="resetForm()" id="resetButton">Annuler</button>
+    </div>
+    <table id="table-typepret">
+        <thead>
+            <tr>
+                <th>ID</th><th>Libelle</th><th>Taux</th><th>Durée maximale (mois)</th><th>Actions</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        const apiBase = "http://localhost/WebFinal/ws";
+        function ajax(method, url, data, callback) {
+            const xhr = new XMLHttpRequest();
+            xhr.open(method, apiBase + url, true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        callback(JSON.parse(xhr.responseText));
+                    } else {
+                        console.error('Erreur:', xhr.status, xhr.statusText);
+                    }
+                }
+            };
+            xhr.send(data);
+        }
+
+        function chargerTypePret() {
+            ajax("GET", "/typepret", null, (data) => {
+                const tbody = document.querySelector("#table-typepret tbody");
+                tbody.innerHTML = "";
+                data.forEach(e => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td>${e.id}</td>
+                        <td>${e.libelle}</td>
+                        <td>${e.taux}%</td>
+                        <td>${e.duree_max}</td>
+                        <td>
+                            <button onclick='remplirFormulaire(${JSON.stringify(e)})'>✏️</button>
+                            <button onclick='supprimerTypePret(${e.id})'>🗑️</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            });
+        }
+
+        function remplirFormulaire(data) {
+            document.getElementById("id").value = data.id;
+            document.getElementById("libelle").value = data.libelle;
+            document.getElementById("taux").value = data.taux;
+            document.getElementById("duree_max").value = data.duree_max;
+            document.getElementById("actionButton").textContent = "Modifier";
+        }
+
+        function ajouterOuModifier() {
+            const id = document.getElementById("id").value;
+            const libelle = document.getElementById("libelle").value;
+            const taux = document.getElementById("taux").value;
+            const duree_max = document.getElementById("duree_max").value;
+
+            if (!libelle || !taux || !duree_max) {
+                alert("Veuillez remplir tous les champs");
+                return;
+            }
+
+            const data = `libelle=${encodeURIComponent(libelle)}&taux=${encodeURIComponent(taux)}&duree_max=${encodeURIComponent(duree_max)}`;
+
+            if (id) {
+                ajax("PUT", `/typepret/${id}`, data, () => {
+                    chargerTypePret();
+                    resetForm();
+                });
+            } else {
+                ajax("POST", "/typepret", data, () => {
+                    chargerTypePret();
+                    resetForm();
+                });
+            }
+        }
+
+        function supprimerTypePret(id) {
+            if (confirm("Êtes-vous sûr de vouloir supprimer ce type de prêt ?")) {
+                ajax("DELETE", `/typepret/${id}`, null, () => {
+                    chargerTypePret();
+                });
+            }
+        }
+
+        function resetForm() {
+            document.getElementById("id").value = "";
+            document.getElementById("libelle").value = "";
+            document.getElementById("taux").value = "";
+            document.getElementById("duree_max").value = "";
+            document.getElementById("actionButton").textContent = "Ajouter";
+        }
+
+        chargerTypePret();
+    </script>
+</body>
+</html>
