@@ -21,6 +21,7 @@ public static function generateClientPDF() {
         require_once __DIR__ . '/../inc/createPDFClients.php';
 
         $dataPret = Statistiques::getDetailsPret($pretId);
+        //Flight::json($dataPret);
 
 
         if (!$dataPret) {

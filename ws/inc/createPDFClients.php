@@ -66,16 +66,17 @@ class PDF extends FPDF
         $this->Cell(80, 8, 'Valeur', 1, 1, 'L', true);
 
         $loanInfo = [
-            'Identifiant du pret' => $dataClients['id_pret'] ?? '001',
-            'Type du pret' => $dataClients['type_pret'] ?? 'Pret personnel',
-            'Montant du pret' => number_format($dataClients['montant_pret'] ?? 1200000, 0, ',', ' ') . ' Ar',
-            'Taux d\'interet' => ($dataClients['taux'] ?? 15) . ' %',
-            'Duree du pret' => ($dataClients['duree'] ?? 15) . ' mois',
-            'Date de debut' => $data['date_debut'] ?? '2024-01-01',
-            'Date de fin' => $data['date_fin'] ?? '2024-12-31',
-            'Montant a rembourser' => number_format($data['montant_rembourser'] ?? 1500000, 0, ',', ' ') . ' Ar',
-            'Montant mensuel' => number_format($data['montant_mensuel'] ?? 100000, 0, ',', ' ') . ' Ar',
+            'Identifiant du pret' => $data['Identifiant du pret'],
+            'Type du pret' => $data['Type du pret'],
+            'Montant du pret' => number_format($data['Montant du pret'], 0, ',', ' ') . ' Ar',
+            'Taux d\'interet' => $data['Taux d\'interet'] . ' %',
+            'Duree du pret' => $data['Duree du pret'] . ' mois',
+            'Date de debut' => $data['Date de debut'],
+            'Date de fin' => $data['Date de fin'],
+            'Montant a rembourser' => number_format($data['Montant a rembourser'], 0, ',', ' ') . ' Ar',
+            'Montant mensuel' => number_format($data['Montant mensuel'], 0, ',', ' ') . ' Ar',
         ];
+
 
         foreach ($loanInfo as $label => $value) {
             $this->SetX(15);
@@ -113,5 +114,3 @@ function createPDFClients($dataClients)
     $pdf->NotesAndSignature();
     $pdf->Output();
 }
-
-?>
