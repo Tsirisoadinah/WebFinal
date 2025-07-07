@@ -13,6 +13,8 @@
 </head>
 <body>
 
+  <button onclick="genererPDF()">Générer PDF</button>
+
   <h1>Gestion des étudiants</h1>
 
   <div>
@@ -35,6 +37,25 @@
 
   <script>
     const apiBase = "http://localhost/WebFinal/ws";
+
+    function genererPDF() {
+      const url = `${apiBase}/create-pdf`;
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", url, true);
+      xhr.responseType = "blob"; // Pour recevoir le PDF
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          const blob = new Blob([xhr.response], { type: "application/pdf" });
+          const link = document.createElement("a");
+          link.href = window.URL.createObjectURL(blob);
+          link.download = "etudiants.pdf";
+          link.click();
+        } else {
+          // alert("Erreur lors de la génération du PDF.");
+        }
+      };
+      xhr.send();
+    }
 
     function ajax(method, url, data, callback) {
       const xhr = new XMLHttpRequest();

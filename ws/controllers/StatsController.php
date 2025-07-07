@@ -2,8 +2,6 @@
 require_once __DIR__ . '/../models/Statistiques.php';
 require_once __DIR__ . '/../helpers/Utils.php';
 
-
-
 class StatsController {
 
     public static function getSommeInterets() {
@@ -16,7 +14,15 @@ class StatsController {
 
         Flight::json(Statistiques::getSommeInteretsParMois($dateDebut, $dateFin));
     }
-     
+
+    
+    public static function getListePrets() {
+        $listePrets = Statistiques::getListePrets();
+        if (!$listePrets) {
+            Flight::halt(404, json_encode(['error' => 'No loans found']));
+        }
+        Flight::json(Statistiques::getListePrets());
+    }
 
 
 }
