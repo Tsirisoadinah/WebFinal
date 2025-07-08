@@ -21,6 +21,11 @@
     --focus-ring-color: rgba(0, 123, 255, 0.25);
     --focus-ring-width: 0.25rem;
     --animation-time: 0.2s;
+    --sidebar-bg: #2b3a55;
+    --sidebar-active: #3e5079;
+    --primary: #007bff;
+    --radius-md: 8px;
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1);
 }
 
 * {
@@ -75,101 +80,67 @@ textarea:focus,
 /* Sidebar Styles */
 .sidebar {
     width: 280px;
+    background-color: var(--sidebar-bg);
+    background-image: linear-gradient(to bottom, var(--sidebar-bg), #303e59);
+    color: #ffffff;
     height: 100vh;
     position: fixed;
+    padding: 2rem 1.5rem;
+    box-shadow: var(--shadow-md);
+    z-index: 10;
+    transition: var(--transition);
+}
+
+.sidebar h2 {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    letter-spacing: 0.5px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    margin-bottom: 0.75rem;
+}
+
+.sidebar a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    display: block;
+    padding: 0.85rem 1.25rem;
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.sidebar a::before {
+    content: '';
+    position: absolute;
     left: 0;
     top: 0;
-    background-color: var(--white);
-    box-shadow: var(--box-shadow);
-    padding: 1.5rem 0;
-    display: flex;
-    flex-direction: column;
-    z-index: 100;
-    transition: all var(--animation-time) ease;
+    height: 100%;
+    width: 3px;
+    background-color: var(--primary);
+    transform: scaleY(0);
+    transition: transform 0.2s ease;
 }
 
-.sidebar-header {
-    padding: 0 1.5rem;
-    display: flex;
-    align-items: center;
-    margin-bottom: 2rem;
+.sidebar a:hover,
+.sidebar a.active {
+    background-color: var(--sidebar-active);
+    color: #ffffff;
 }
 
-.logo {
-    width: 48px;
-    height: 48px;
-    margin-right: 1rem;
-    border-radius: 8px;
-}
-
-.sidebar-header h3 {
-    color: var(--primary-color);
-    font-weight: 600;
-    font-size: 1.25rem;
-}
-
-.sidebar hr {
-    border: none;
-    height: 1px;
-    background-color: var(--border-color);
-    margin: 0 1.5rem 1.5rem;
-}
-
-.nav-links {
-    list-style: none;
-    flex: 1;
-    padding: 0 1rem;
-}
-
-.nav-links li {
-    position: relative;
-    margin-bottom: 0.5rem;
-}
-
-.sidebar-link {
-    display: flex;
-    align-items: center;
-    color: var(--text-color);
-    text-decoration: none;
-    padding: 0.875rem 1.25rem;
-    border-radius: var(--button-border-radius);
-    transition: all var(--animation-time) ease;
-    font-weight: 500;
-}
-
-.sidebar-link i {
-    min-width: 1.5rem;
-    font-size: 1.25rem;
-    margin-right: 0.75rem;
-    color: var(--secondary-color);
-    transition: color var(--animation-time) ease;
-}
-
-.sidebar-link.active {
-    background-color: var(--primary-light);
-    color: var(--primary-color);
-}
-
-.sidebar-link.active i {
-    color: var(--primary-color);
-}
-
-.sidebar-link:hover:not(.active) {
-    background-color: var(--light-color);
-    color: var(--primary-hover);
-}
-
-.sidebar-link:hover:not(.active) i {
-    color: var(--primary-hover);
-}
-
-.sidebar-footer {
-    padding: 1.5rem;
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 0.875rem;
-    border-top: 1px solid var(--border-color);
-    margin-top: 1rem;
+.sidebar a:hover::before,
+.sidebar a.active::before {
+    transform: scaleY(1);
 }
 
 /* Main Content Styles */
