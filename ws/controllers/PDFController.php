@@ -23,12 +23,13 @@ public static function generateClientPDF() {
         $dataPret = Statistiques::getDetailsPret($pretId);
         //Flight::json($dataPret);
 
+        $dataPrets = Statistiques::getDetailsPDFByPret($pretId);
 
         if (!$dataPret) {
             Flight::halt(404, json_encode(['error' => 'Loan not found']));
         }
 
-        createPDFClients($dataPret);
+        createPDFClients($dataPret, $dataPrets);
         // Termine l'exécution après génération du PDF
         exit;
     }

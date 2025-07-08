@@ -87,6 +87,42 @@ class PDF extends FPDF
     }
 
 
+    function PaymentSummary($payments)
+    {
+        $this->SetFont('Arial', 'B', 12);
+        $this->SetTextColor(44, 82, 130);
+        $this->Cell(0, 10, 'Resume des Paiements', 0, 1, 'L');
+        $this->SetFont('Arial', '', 10);
+        $this->SetTextColor(0, 0, 0);
+
+        $this->SetX(15);
+        $this->SetFillColor(247, 250, 252);
+        $this->SetDrawColor(200, 200, 200);
+        $this->Cell(30, 8, 'Annee', 1, 0, 'C', true);
+        $this->Cell(40, 8, 'Mois', 1, 0, 'C', true);
+        $this->Cell(40, 8, 'Interets (Ar)', 1, 0, 'C', true);
+        $this->Cell(40, 8, 'Capital (Ar)', 1, 1, 'C', true);
+
+        $totalInterets = 0;
+        $totalCapital = 0;
+
+        $monthNames = [
+            1 => 'Janvier', 2 => 'Fevrier', 3 => 'Mars', 4 => 'Avril', 5 => 'Mai', 6 => 'Juin',
+            7 => 'Juillet', 8 => 'Août', 9 => 'Septembre', 10 => 'Octobre', 11 => 'Novembre', 12 => 'Decembre'
+        ];
+
+        foreach ($payments as $payment) {
+            $this->SetX(15);
+            $this->Cell(30, 8, $payment['annee'], 1, 0, 'C');
+            $this->Cell(40, 8, $monthNames[$payment['mois']], 1, 0, 'C');
+            $this->Cell(40, 8, number_format($payment['interets'], 2, ',', ' '), 1, 0, 'R');
+            $this->Cell(40, 8, number_format($payment['capital'], 2, ',', ' '), 1, 1, 'R');
+            $totalInterets += $payment['interets'];
+            $totalCapital += $payment['capital'];
+        }
+    }
+
+
     // Notes et signature
     function NotesAndSignature()
     {
@@ -103,14 +139,16 @@ class PDF extends FPDF
     }
 }
 
-function createPDFClients($dataClients)
+function createPDFClients($dataClients,$data_prets)
 {
-
     $pdf = new PDF();
     $pdf->AliasNbPages();
     $pdf->AddPage();
     $pdf->ClientInfo($dataClients);
     $pdf->LoanDetails($dataClients);
+    $pdf->PaymentSummary($data_prets);
     $pdf->NotesAndSignature();
     $pdf->Output();
 }
+
+

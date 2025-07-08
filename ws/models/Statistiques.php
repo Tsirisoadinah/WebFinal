@@ -115,4 +115,86 @@ class Statistiques
                 'email' => $data['client_email']
         ];
     }
+
+
+    public static function getHistoriqueMensuelByPret($id_pret)
+    {
+        $db = getDB();
+
+        $query = "
+            SELECT 
+                YEAR(date_paiement) AS annee,
+                MONTH(date_paiement) AS mois,
+                SUM(interet) AS interets,
+                SUM(capital) AS capital
+            FROM finance_Historique_Pret
+            WHERE id_pret = ?
+            GROUP BY annee, mois
+            ORDER BY annee, mois
+        ";
+
+        $stmt = $db->prepare($query);
+        $stmt->execute([$id_pret]);
+        $resultats = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Optionnel : cast float (sinon renvoie string)
+        foreach ($resultats as &$row) {
+            $row['interets'] = floatval($row['interets']);
+            $row['capital'] = floatval($row['capital']);
+        }
+
+        return $resultats;
+    }
+
+        public static function getDetailsPDFByPret($id_pret)
+    {
+        $db = getDB();
+
+        $query = "
+        SELECT 
+            date_paiement,
+            capital,
+            interet
+        FROM finance_Historique_Pret
+        WHERE id_pret = ?
+        ORDER BY date_paiement ASC
+    ";
+
+        $stmt = $db->prepare($query);
+        $stmt->execute([$id_pret]);
+        $resultats = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $details = [];
+        $capitalRestant = 0;
+
+        // Calcul total initial du capital
+        foreach ($resultats as $row) {
+            $capitalRestant += floatval($row['capital']);
+        }
+
+        $mois = 1;
+        foreach ($resultats as $row) {
+            $datePaiement = DateTime::createFromFormat('Y-m-d', $row['date_paiement']);
+            $capital = floatval($row['capital']);
+            $interet = floatval($row['interet']);
+            $mensualite = $capital + $interet;
+
+            $capitalRestant -= $capital;
+
+            $details[] = [
+                'mois' => $mois,
+                'annee' => (int)$datePaiement->format('Y'),
+                'date' => $datePaiement->format('d/m/Y'),
+                'mensualite' => round($mensualite, 2),
+                'capital' => round($capital, 2),
+                'interets' => round($interet, 2),
+                'capital_restant' => round(max($capitalRestant, 0), 2)
+            ];
+
+            $mois++;
+        }
+
+        return $details;
+    }
+
 }
