@@ -58,6 +58,11 @@
             });
         }
 
+        function genererPDF(pretId) {
+    // Open the PDF generation URL in a new tab/window
+    window.open(`http://localhost/WebFinal/ws/create-pdf?pretId=${pretId}`, '_blank');
+}
+
         // Charger la liste des prêts
         function loadLoans() {
             ajax("GET", "/stats/liste-prets", null, function(response) {
@@ -97,6 +102,7 @@
         // Charger les prêts au démarrage
         document.addEventListener('DOMContentLoaded', loadLoans);
     </script>
+    
 
 </body>
 </html>
