@@ -68,7 +68,15 @@ CREATE TABLE finance_Client_Pret (
 
 CREATE TABLE finance_Simulation(
    id INTEGER PRIMARY KEY AUTO_INCREMENT,
-   libelle VARCHAR(50),
-   id_pret INTEGER,
-   FOREIGN KEY(id_pret) REFERENCES finance_Pret(id)
+   nom VARCHAR(50),
+   id_client INTEGER,
+   mensualite DECIMAL(10,2),
+   montant_pret DECIMAL(10,2),
+   taux DECIMAL(10,2),
+   duree INTEGER,
+   date_debut DATE,
+   date_fin DATE,
+   assurance DECIMAL(10,2),
+   delai INTEGER,
+   FOREIGN KEY(id_client) REFERENCES finance_Clients(id)
 );
