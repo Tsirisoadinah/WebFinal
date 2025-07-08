@@ -75,6 +75,9 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         createLoan();
     });
+    
+    // Ajouter un événement pour le bouton de sauvegarde de simulation
+    document.getElementById('save-simulation-btn').addEventListener('click', saveSimulation);
 });
 
 // Charger la liste des clients
@@ -359,6 +362,68 @@ function createLoan() {
         // Réactiver le bouton de soumission
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<i class="fas fa-check"></i> Créer le Prêt';
+    });
+}
+
+// Fonction pour sauvegarder une simulation
+function saveSimulation() {
+    // Vérifier qu'une simulation a bien été effectuée
+    if (document.getElementById('simulation-result').style.display !== 'block') {
+        showAlert('error', 'Veuillez d\'abord effectuer une simulation.');
+        return;
+    }
+    
+    // Demander un nom pour la simulation
+    const simulationName = prompt('Donnez un nom à cette simulation:', 'Simulation du ' + new Date().toLocaleDateString());
+    
+    // Si l'utilisateur a annulé, sortir de la fonction
+    if (!simulationName) return;
+    
+    // Récupérer les données du formulaire
+    const typePretId = document.getElementById('type-pret').value;
+    const montantPret = document.getElementById('montant-pret').value;
+    const datePret = document.getElementById('date-pret').value;
+    const assurance = document.getElementById('assurance').value;
+    const delai = document.getElementById('delai').value;
+    const clientId = document.getElementById('client-select').value;
+    const duree = document.getElementById('duree_prevue').value;
+    
+    // Vérifier que les données requises sont présentes
+    if (!typePretId || !montantPret || !datePret || !clientId) {
+        showAlert('error', 'Informations manquantes pour sauvegarder la simulation.');
+        return;
+    }
+    
+    // Préparer les données pour l'API
+    const formData = new URLSearchParams();
+    formData.append('nom', simulationName);
+    formData.append('type_pret_id', typePretId);
+    formData.append('montant_pret', montantPret);
+    formData.append('date_pret', datePret);
+    formData.append('assurance', assurance);
+    formData.append('delai', delai);
+    formData.append('client_id', clientId);
+    formData.append('duree_prevue', duree);
+    
+    // Appeler l'API pour sauvegarder la simulation
+    fetch(`${API_BASE_URL}/simulations`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('success', 'Simulation sauvegardée avec succès !');
+        } else {
+            showAlert('error', data.message || 'Erreur lors de la sauvegarde de la simulation.');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur lors de la sauvegarde de la simulation:', error);
+        showAlert('error', 'Erreur de communication avec le serveur.');
     });
 }
 
