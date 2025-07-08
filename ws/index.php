@@ -9,6 +9,7 @@ require 'routes/client_routes.php';
 require 'routes/type_pret_routes.php';
 require 'routes/stats_routes.php';
 require 'routes/pdf_routes.php';
+require 'routes/simulation_routes.php';
 
 // Activer CORS pour permettre les requêtes depuis le frontend
 Flight::route('*', function(){

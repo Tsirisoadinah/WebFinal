@@ -353,6 +353,145 @@ class Pret
         }
     }
 
+    // Sauvegarder une simulation
+    public static function saveSimulation($nom, $clientId, $typePretId, $montantPret, $datePret, $assurance, $delai, $duree)
+    {
+        $db = getDB();
+        
+        try {
+            // Utiliser la simulation existante pour récupérer les données calculées
+            $simulation = self::simulatePret($typePretId, $montantPret, $datePret, $assurance, $delai, $clientId, $duree);
+            
+            if (!$simulation['success']) {
+                return $simulation; // Retourne l'erreur si la simulation a échoué
+            }
+            
+            // Préparer l'insertion des données de simulation
+            $stmt = $db->prepare("INSERT INTO finance_Simulation 
+                                 (nom, id_client, mensualite, montant_pret, taux, duree, date_debut, date_fin, assurance, delai) 
+                                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            
+            $stmt->execute([
+                $nom,
+                $clientId,
+                $simulation['mensualite'],
+                $montantPret,
+                $simulation['taux'],
+                $duree,
+                $datePret,
+                $simulation['fin_remboursement'],
+                $assurance,
+                $delai
+            ]);
+            
+            $simulationId = $db->lastInsertId();
+            
+            return [
+                'success' => true,
+                'message' => 'Simulation sauvegardée avec succès',
+                'simulation_id' => $simulationId,
+                'details' => $simulation
+            ];
+            
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Erreur lors de la sauvegarde de la simulation: ' . $e->getMessage()
+            ];
+        }
+    }
+    
+    // Récupérer toutes les simulations
+    public static function getAllSimulations()
+    {
+        $db = getDB();
+        
+        try {
+            $query = "SELECT s.*, c.nom as client_nom 
+                     FROM finance_Simulation s
+                     JOIN finance_Clients c ON s.id_client = c.id
+                     ORDER BY s.id DESC";
+            
+            $stmt = $db->query($query);
+            $simulations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            return [
+                'success' => true,
+                'simulations' => $simulations
+            ];
+            
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Erreur lors de la récupération des simulations: ' . $e->getMessage()
+            ];
+        }
+    }
+    
+    // Récupérer les simulations d'un client
+    public static function getSimulationsByClient($clientId)
+    {
+        $db = getDB();
+        
+        try {
+            $query = "SELECT s.*, c.nom as client_nom 
+                     FROM finance_Simulation s
+                     JOIN finance_Clients c ON s.id_client = c.id
+                     WHERE s.id_client = ?
+                     ORDER BY s.id DESC";
+            
+            $stmt = $db->prepare($query);
+            $stmt->execute([$clientId]);
+            $simulations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            return [
+                'success' => true,
+                'simulations' => $simulations
+            ];
+            
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Erreur lors de la récupération des simulations: ' . $e->getMessage()
+            ];
+        }
+    }
+    
+    // Récupérer une simulation spécifique
+    public static function getSimulationById($simulationId)
+    {
+        $db = getDB();
+        
+        try {
+            $query = "SELECT s.*, c.nom as client_nom 
+                     FROM finance_Simulation s
+                     JOIN finance_Clients c ON s.id_client = c.id
+                     WHERE s.id = ?";
+            
+            $stmt = $db->prepare($query);
+            $stmt->execute([$simulationId]);
+            $simulation = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$simulation) {
+                return [
+                    'success' => false,
+                    'message' => 'Simulation non trouvée'
+                ];
+            }
+            
+            return [
+                'success' => true,
+                'simulation' => $simulation
+            ];
+            
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Erreur lors de la récupération de la simulation: ' . $e->getMessage()
+            ];
+        }
+    }
+    
     // Récupérer tous les prêts d'un client
     public static function getPretsByClient($clientId)
     {
@@ -399,3 +538,4 @@ class Pret
         ];
     }
 }
+?>
