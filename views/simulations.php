@@ -6,7 +6,7 @@
     <title>Comparaison de Simulations</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="../css/style.css">
     <style>
         .simulation-item {
             display: flex;
@@ -94,8 +94,7 @@
     </style>
 </head>
 <body>
-    <!-- Sidebar will be loaded here -->
-    <div id="sidebar-container"></div>
+    <?php include('sidebar.html'); ?>
     
     <div class="main-content">
         <div class="header">
@@ -168,6 +167,6 @@
         </div>
     </div>
     
-    <script src="js/simulations.js"></script>
+    <script src="../js/simulations.js"></script>
 </body>
 </html>
