@@ -17,14 +17,17 @@ class PretController {
         $datePret = isset($data->date_pret) ? $data->date_pret : date('Y-m-d');
         $assurance = isset($data->assurance) ? floatval($data->assurance) : 0;
         $delai = isset($data->delai) ? intval($data->delai) : 0;
+        $duree_prevue = isset($data->duree_prevue) ? intval($data->duree_prevue) : 0;
         
+
         $result = Pret::createPret(
             $data->type_pret_id,
             $data->montant_pret,
             $datePret,
             $assurance,
             $delai,
-            $data->client_id
+            $data->client_id,
+            $duree_prevue
         );
         
         if ($result['success']) {
@@ -49,6 +52,7 @@ class PretController {
         $datePret = isset($data->date_pret) ? $data->date_pret : date('Y-m-d');
         $assurance = isset($data->assurance) ? floatval($data->assurance) : 0;
         $delai = isset($data->delai) ? intval($data->delai) : 0;
+        $duree_prevue = isset($data->duree_prevue) ? intval($data->duree_prevue) : 0;
         
         $result = Pret::simulatePret(
             $data->type_pret_id,
@@ -56,7 +60,8 @@ class PretController {
             $datePret,
             $assurance,
             $delai,
-            $data->client_id
+            $data->client_id,
+            $duree_prevue
         );
         
         Flight::json($result);

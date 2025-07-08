@@ -14,7 +14,7 @@ class Pret
     public static function calculMontantAssurance($montantPret, $assurance) {
         return $montantPret * ($assurance / 100);
     }
-    
+
     // Retourne la somme des paiements remboursés avant une date
     public static function getSommeHistoriquePret($date) {
         $db = getDB();
@@ -49,7 +49,7 @@ class Pret
     }
     
     // Calcule la date de fin selon la durée
-    public static function getDateFinPret($datePret, $typePretId) {
+    public static function getDateFinPret($datePret, $typePretId, $duree) {
         $db = getDB();
         $query = "SELECT duree_max FROM finance_Type_Pret WHERE id = ?";
         $stmt = $db->prepare($query);
@@ -61,7 +61,7 @@ class Pret
         }
         
         $dureeMax = intval($result['duree_max']);
-        return date('Y-m-d', strtotime($datePret . " + $dureeMax months"));
+        return date('Y-m-d', strtotime($datePret . " + $duree months"));
     }
     
     // Vérifie si l'établissement a assez de fonds
@@ -137,7 +137,7 @@ class Pret
     }
     
     // Créer un prêt et l'historique des remboursements
-    public static function createPret($typePretId, $montantPret, $datePret, $assurance, $delai, $clientId) {
+    public static function createPret($typePretId, $montantPret, $datePret, $assurance, $delai, $clientId, $duree) {
         $db = getDB();
         
         try {
@@ -153,8 +153,11 @@ class Pret
             }
             
             $taux = floatval($typePret['taux']);
-            $duree = intval($typePret['duree_max']);
-            
+            $duree_max = intval($typePret['duree_max']);
+
+            if ($duree_max < $duree) {
+                throw new Exception("La durée ne peut pas être inférieure à la durée max");
+            }
             // Calculer le montant réel avec assurance
             $montantAssurance = self::calculMontantAssurance($montantPret, $assurance);
             $montantReel = $montantPret + $montantAssurance;
@@ -173,7 +176,7 @@ class Pret
             }
             
             // Calculer la date de fin du prêt
-            $dateFin = self::getDateFinPret($datePret, $typePretId);
+            $dateFin = self::getDateFinPret($datePret, $typePretId,$duree);
             
             // Insérer le prêt
             $stmtPret = $db->prepare("INSERT INTO finance_Pret (id_type_pret, montant_mensuel, montant_pret, date_pret, date_fin, assurance, delai) 
@@ -243,7 +246,7 @@ class Pret
     }
     
     // Simulation de prêt (sans insertion en base)
-    public static function simulatePret($typePretId, $montantPret, $datePret, $assurance, $delai, $clientId) {
+    public static function simulatePret($typePretId, $montantPret, $datePret, $assurance, $delai, $clientId, $duree) {
         $db = getDB();
         
         try {
@@ -257,8 +260,11 @@ class Pret
             }
             
             $taux = floatval($typePret['taux']);
-            $duree = intval($typePret['duree_max']);
-            
+            $duree_max = intval($typePret['duree_max']);
+
+            if ($duree_max < $duree) {
+                throw new Exception("La durée ne peut pas être inférieure à la durée max");
+            }
             // Calculer le montant réel avec assurance
             $montantAssurance = self::calculMontantAssurance($montantPret, $assurance);
             $montantReel = $montantPret + $montantAssurance;
@@ -273,7 +279,7 @@ class Pret
             $capaciteOk = self::checkIfPossiblePret($clientId, $mensualite, $datePret);
             
             // Calculer la date de fin du prêt
-            $dateFin = self::getDateFinPret($datePret, $typePretId);
+            $dateFin = self::getDateFinPret($datePret, $typePretId,$duree);
             
             // Calculer le début des remboursements
             $dateDebut = self::getDebutRemboursement($datePret, $delai);

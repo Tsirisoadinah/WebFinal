@@ -200,6 +200,7 @@ function simulateLoan() {
     const assurance = document.getElementById('assurance').value;
     const delai = document.getElementById('delai').value;
     const clientId = document.getElementById('client-select').value;
+    const duree = document.getElementById('duree_prevue').value;
     
     // Vérifier que les données requises sont présentes
     if (!typePretId || !montantPret || !datePret || !clientId) {
@@ -215,6 +216,7 @@ function simulateLoan() {
     formData.append('assurance', assurance);
     formData.append('delai', delai);
     formData.append('client_id', clientId);
+    formData.append('duree_prevue', duree);
     
     // Appeler l'API de simulation
     fetch(`${API_BASE_URL}/prets/simuler`, {
@@ -300,6 +302,7 @@ function createLoan() {
     const assurance = document.getElementById('assurance').value;
     const delai = document.getElementById('delai').value;
     const clientId = document.getElementById('client-select').value;
+    const duree = document.getElementById('duree_prevue').value;
     
     // Vérifier que les données requises sont présentes
     if (!typePretId || !montantPret || !datePret || !clientId) {
@@ -320,6 +323,8 @@ function createLoan() {
     formData.append('assurance', assurance);
     formData.append('delai', delai);
     formData.append('client_id', clientId);
+    formData.append('duree_prevue', duree);
+  
     
     // Appeler l'API de création
     fetch(`${API_BASE_URL}/prets/create`, {
