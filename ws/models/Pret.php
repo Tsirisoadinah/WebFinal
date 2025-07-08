@@ -166,7 +166,7 @@ class Pret
             $duree_max = intval($typePret['duree_max']);
 
             if ($duree_max < $duree) {
-                throw new Exception("La durée ne peut pas être inférieure à la durée max");
+                throw new Exception("La durée ne peut pas être supérieure à la durée max");
             }
             // Calculer le montant réel avec assurance
             $montantAssurance = self::calculMontantAssurance($montantPret, $assurance);
@@ -273,7 +273,7 @@ class Pret
             $duree_max = intval($typePret['duree_max']);
 
             if ($duree_max < $duree) {
-                throw new Exception("La durée ne peut pas être inférieure à la durée max");
+                throw new Exception("La durée ne peut pas être supérieure à la durée max");
             }
             // Calculer le montant réel avec assurance
             $montantAssurance = self::calculMontantAssurance($montantPret, $assurance);
