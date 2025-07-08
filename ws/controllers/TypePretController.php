@@ -4,6 +4,7 @@ require_once __DIR__ . '/../helpers/Utils.php';
 
 
 class TypePretController {
+
     public static function getAll() {
         $typesPret = TypePret::getAll();
         Flight::json($typesPret);
@@ -16,7 +17,7 @@ class TypePretController {
         } else {
             Flight::json(['message' => 'Type de prêt non trouvé'], 404);
         }
-
+    }
 
     public static function create() {
         $data = Flight::request()->data;
@@ -48,8 +49,8 @@ class TypePretController {
     }
 
     public static function delete($id) {
-        TypePret::delete($id);
-        Flight::json(['message' => 'Type de prêt supprimé']);
+            TypePret::delete($id);
+            Flight::json(['message' => 'Type de prêt supprimé']);
+        }
     }
-}
 ?>
