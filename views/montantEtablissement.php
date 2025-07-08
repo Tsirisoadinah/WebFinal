@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Statistiques Intérêts</title>
+    <title> Montant de l'EF </title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../assets/css/style.css">  
     <style>
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -178,11 +179,12 @@
 
 <body>
     <!-- Inclure la sidebar (supposée dans un fichier séparé) -->
-    <div id="sidebar-placeholder"></div>
+    <?php include('sidebar.html'); ?>
+
 
     <div class="content">
         <div class="container">
-            <h1>Statistiques Intérêts</h1>
+            <h1>Montant de l'Etablissement Financier </h1>
 
 
             <form class="filter-section" id="interetForm" method="POST">
@@ -246,18 +248,21 @@
 
         // Formater les mois en français
         function formatMonth(date) {
-            return date.toLocaleString('fr-FR', { month: 'short', year: 'numeric' });
+            return date.toLocaleString('fr-FR', {
+                month: 'short',
+                year: 'numeric'
+            });
         }
 
         // Charger les données des remboursements
         function loadRemboursements() {
-            document.getElementById('interetForm').addEventListener('submit', function (event) {
+            document.getElementById('interetForm').addEventListener('submit', function(event) {
                 event.preventDefault();
 
                 const dateDebut = document.getElementById('dateDebut').value;
                 const dateFin = document.getElementById('dateFin').value;
 
-                ajax("GET", `/etablissement/etat?dateDebut=${encodeURIComponent(dateDebut)}&dateFin=${encodeURIComponent(dateFin)}`, null, function (response) {
+                ajax("GET", `/etablissement/etat?dateDebut=${encodeURIComponent(dateDebut)}&dateFin=${encodeURIComponent(dateFin)}`, null, function(response) {
                     const tbody = document.getElementById('interestTableBody');
                     tbody.innerHTML = '';
 
@@ -288,7 +293,7 @@
         };
 
         // Initialisation
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             loadRemboursements();
         });
     </script>
