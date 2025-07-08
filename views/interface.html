@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion Financière - Tableau de Bord</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Gestion Financière</h2>
+        <ul>
+            <li><a href="listePret.html" class="active" data-section="loans">Liste des Prêts</a></li>
+            <li><a href="statistiques.html" data-section="interests">Liste des Intérêts</a></li>
+            <li><a href="ajout_fond.html" data-section="add-budget">Ajout Budget</a></li>
+            <li><a href="Typepret.html" data-section="add-loan-type">Ajout Type de Prêt</a></li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <!-- Liste des Prêts -->
+        <div id="loans-section" class="container">
+            <h1>Liste des Prêts</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Prêt</th>
+                        <th>Client</th>
+                        <th>Type de Prêt</th>
+                        <th>Montant (Ar)</th>
+                        <th>Taux (%)</th>
+                        <th>Date Début</th>
+                        <th>Date Fin</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="loanTableBody">
+                    <tr>
+                        <td colspan="8" class="no-data">Chargement des données...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Liste des Intérêts -->
+        <div id="interests-section" class="container" style="display: none;">
+            <h1>Récapitulatif des Intérêts</h1>
+            <form class="filter-section" id="interetForm">
+                <div>
+                    <label for="dateDebut">Date début</label>
+                    <input type="date" id="dateDebut" name="dateDebut" required>
+                </div>
+                <div>
+                    <label for="dateFin">Date fin</label>
+                    <input type="date" id="dateFin" name="dateFin" required>
+                </div>
+                <button type="submit">Filtrer</button>
+            </form>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Année</th>
+                        <th>Mois</th>
+                        <th>Total Intérêts (Ar)</th>
+                        <th>Total Capital (Ar)</th>
+                    </tr>
+                </thead>
+                <tbody id="interestTableBody">
+                    <tr>
+                        <td colspan="4" class="no-data">Aucune donnée disponible</td>
+                    </tr>
+                </tbody>
+            </table>
+            <canvas id="interestChart"></canvas>
+        </div>
+
+        <!-- Ajout Budget -->
+        <div id="add-budget-section" class="container" style="display: none;">
+            <h1>Ajouter un Budget</h1>
+            <form class="form-section" id="budgetForm">
+                <div>
+                    <label for="budgetClientId">ID Client</label>
+                    <input type="number" id="budgetClientId" name="clientId" required>
+                </div>
+                <div>
+                    <label for="budgetMontant">Montant (Ar)</label>
+                    <input type="number" id="budgetMontant" name="montant" required>
+                </div>
+                <div>
+                    <label for="budgetDate">Date</label>
+                    <input type="date" id="budgetDate" name="date" required>
+                </div>
+                <div>
+                    <label for="budgetDescription">Description</label>
+                    <input type="text" id="budgetDescription" name="description" required>
+                </div>
+                <button type="submit">Ajouter Budget</button>
+            </form>
+        </div>
+
+        <!-- Ajout Type de Prêt -->
+        <div id="add-loan-type-section" class="container" style="display: none;">
+            <h1>Ajouter un Type de Prêt</h1>
+            <form class="form-section" id="loanTypeForm">
+                <div>
+                    <label for="loanTypeLibelle">Libellé</label>
+                    <input type="text" id="loanTypeLibelle" name="libelle" required>
+                </div>
+                <div>
+                    <label for="loanTypeTaux">Taux d'intérêt (%)</label>
+                    <input type="number" step="0.01" id="loanTypeTaux" name="taux" required>
+                </div>
+                <div>
+                    <label for="loanTypeDuree">Durée maximale (mois)</label>
+                    <input type="number" id="loanTypeDuree" name="duree_max" required>
+                </div>
+                <button type="submit">Ajouter Type de Prêt</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
