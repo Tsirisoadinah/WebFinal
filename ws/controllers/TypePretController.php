@@ -2,19 +2,21 @@
 require_once __DIR__ . '/../models/TypePret.php';
 require_once __DIR__ . '/../helpers/Utils.php';
 
+
 class TypePretController {
     public static function getAll() {
-        $types = TypePret::getAll();
-        Flight::json($types);
+        $typesPret = TypePret::getAll();
+        Flight::json($typesPret);
     }
 
     public static function getById($id) {
-        $type = TypePret::getById($id);
-        if (!$type) {
-            Flight::halt(404, 'Type de prêt non trouvé');
+        $typePret = TypePret::getById($id);
+        if ($typePret) {
+            Flight::json($typePret);
+        } else {
+            Flight::json(['message' => 'Type de prêt non trouvé'], 404);
         }
-        Flight::json($type);
-    }
+
 
     public static function create() {
         $data = Flight::request()->data;
@@ -26,6 +28,7 @@ class TypePretController {
     }
 
     public static function update($id) {
+        $data = Flight::request()->data;
         $request = Flight::request();
         
         // Pour les requêtes PUT, nous devons parser le corps manuellement
@@ -49,3 +52,4 @@ class TypePretController {
         Flight::json(['message' => 'Type de prêt supprimé']);
     }
 }
+?>

@@ -34,3 +34,4 @@ class TypePret {
         $stmt->execute([$id]);
     }
 }
+?>
