@@ -12,7 +12,7 @@ function formatDate(dateString) {
 
 function formatCurrency(amount) {
     if (amount === undefined || amount === null) return '--';
-    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount);
+    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'MGA', currencyDisplay: 'symbol' }).format(amount).replace('MGA', 'Ar');
 }
 
 function formatPercent(value) {
