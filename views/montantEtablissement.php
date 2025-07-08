@@ -181,11 +181,9 @@
     <!-- Inclure la sidebar (supposée dans un fichier séparé) -->
     <?php include('sidebar.html'); ?>
 
-
     <div class="content">
         <div class="container">
             <h1>Montant de l'Etablissement Financier </h1>
-
 
             <form class="filter-section" id="interetForm" method="POST">
                 <div>
