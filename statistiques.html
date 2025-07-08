@@ -10,12 +10,59 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: #f7f9fc;
             margin: 0;
-            padding: 30px;
             color: #1a202c;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #2d3748;
+            color: #ffffff;
+            height: 100vh;
+            position: fixed;
+            padding: 20px;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h2 {
+            font-size: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar a {
+            color: #a0aec0;
+            text-decoration: none;
+            display: block;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background-color: #4a5568;
+            color: #ffffff;
+        }
+
+        .content {
+            margin-left: 270px;
+            padding: 30px;
+            width: calc(100% - 270px);
         }
 
         .container {
-            max-width: 90%;
+            max-width: 1300px;
             margin: 0 auto;
             background-color: #ffffff;
             border-radius: 12px;
@@ -86,6 +133,7 @@
         }
 
         table {
+            margin: 0 auto;
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
@@ -98,7 +146,7 @@
 
         th,
         td {
-            padding: 14px 16px;
+            padding: 10px 12px;
             border-bottom: 1px solid #edf2f7;
             text-align: left;
             font-size: 14px;
@@ -110,6 +158,7 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            text-align: center;
         }
 
         tr {
@@ -140,6 +189,10 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
+        .montant {
+            text-align: right;
+        }
+
         @media (max-width: 640px) {
             body {
                 padding: 16px;
@@ -167,6 +220,18 @@
     </style>
 </head>
 <body>
+
+     <div class="sidebar">
+        <h2>Gestion Financière</h2>
+        <ul>
+            <li><a href="listePret.html" data-section="loans">Liste des Prêts</a></li>
+            <li><a href="statistiques.html" class="active" data-section="interests">Liste des Intérêts</a></li>
+            <li><a href="ajout_fond.html" data-section="add-budget">Ajout Budget</a></li>
+            <li><a href="#" data-section="add-loan-type">Ajout Type de Prêt</a></li>
+        </ul>
+    </div>
+
+    <div class="content">
     <div class="container">
         <h1>Statistiques Intérêts</h1>
 
@@ -199,6 +264,7 @@
         </table>
 
         <canvas id="interestChart"></canvas>
+    </div>
     </div>
 
     <script>
@@ -249,10 +315,10 @@
                     response.forEach(row => {
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
-                            <td>${row.annee}</td>
-                            <td>${row.mois}</td>
-                            <td>${row.total_interets}</td>
-                            <td>${row.total_capital}</td>
+                            <td class="montant">${row.annee}</td>
+                            <td class="montant">${row.mois}</td>
+                            <td class="montant">${row.total_interets}</td>
+                            <td class="montant">${row.total_capital}</td>
                         `;
                         tbody.appendChild(tr);
                     });
