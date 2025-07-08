@@ -213,12 +213,12 @@ class Pret
             $capitalRestant = $montantReel;
             $dateRemboursement = $dateDebut;
 
-            for ($i = 0; $i < $duree - $delai; $i++) {
+            for ($i = 0; $i < $nbMoisRemboursement; $i++) {
                 $interet = $capitalRestant * ($taux / 12 / 100);
                 $capital = $mensualite - $interet;
 
                 // Ajustement pour le dernier mois
-                if ($i == $duree - 1) {
+                if ($i == $nbMoisRemboursement- 1) {
                     $capital = $capitalRestant;
                     $mensualite = $capital + $interet;
                 }
@@ -306,7 +306,7 @@ class Pret
                 $capital = $mensualite - $interet;
 
                 // Ajustement pour le dernier mois
-                if ($i == $duree - 1) {
+                if ($i == $nbMoisRemboursement - 1) {
                     $capital = $capitalRestant;
                     $mensualite = $capital + $interet;
                 }
