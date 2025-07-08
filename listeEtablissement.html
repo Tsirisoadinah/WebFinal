@@ -22,7 +22,7 @@
         }
 
         .container {
-            max-width: 960px;
+            max-width: 1400px;
             margin: 0 auto;
             background-color: #ffffff;
             border-radius: 12px;
@@ -36,6 +36,17 @@
             font-size: 28px;
             font-weight: 700;
             margin-bottom: 32px;
+        }
+
+        .summary-box {
+            background-color: #edf2f7;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
         }
 
         .filter-section {
@@ -141,6 +152,10 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
+        .montant {
+            text-align: right;
+        }
+
         @media (max-width: 768px) {
             .content {
                 margin-left: 0;
@@ -169,6 +184,7 @@
         <div class="container">
             <h1>Statistiques Intérêts</h1>
 
+
             <form class="filter-section" id="interetForm" method="POST">
                 <div>
                     <label for="dateDebut">Date début</label>
@@ -186,19 +202,23 @@
                     <tr>
                         <th>Année</th>
                         <th>Mois</th>
+                        <th>Fonds initial </th>
+                        <th>Emprunté</th>
                         <th>Reste Non Emprunté (Ar)</th>
                         <th>Total Intérêts (Ar)</th>
                         <th>Total Capital (Ar)</th>
                         <th>Montant Total (Ar)</th>
                     </tr>
                 </thead>
+
                 <tbody id="interestTableBody">
                     <tr>
-                        <td colspan="6" class="no-data">Aucune donnée disponible</td>
+                        <td colspan="5" class="no-data">Aucune donnée disponible</td>
                     </tr>
                 </tbody>
             </table>
 
+            <canvas id="interestChart"></canvas>
         </div>
     </div>
 
@@ -223,100 +243,53 @@
             xhr.send(data);
         }
 
-        // Générer la liste des mois
-        function generateMonthList(startDate, endDate) {
-            const months = [];
-            let current = new Date(startDate);
-            current.setDate(1);
-            const end = new Date(endDate);
-            end.setDate(1);
-
-            while (current <= end) {
-                months.push(new Date(current));
-                current.setMonth(current.getMonth() + 1);
-            }
-            return months;
-        }
 
         // Formater les mois en français
         function formatMonth(date) {
-            return date.toLocaleString('fr-FR', {
-                month: 'short',
-                year: 'numeric'
-            });
+            return date.toLocaleString('fr-FR', { month: 'short', year: 'numeric' });
         }
 
-        // Charger les données des remboursements et reste non emprunté
-        function loadData() {
-            document.getElementById('interetForm').addEventListener('submit', function(event) {
+        // Charger les données des remboursements
+        function loadRemboursements() {
+            document.getElementById('interetForm').addEventListener('submit', function (event) {
                 event.preventDefault();
-
-        function genererPDF(pretId) {
-    // Open the PDF generation URL in a new tab/window
-    window.open(`http://localhost/WebFinal/ws/create-pdf?pretId=${pretId}`, '_blank');
-}
-
-        // Charger la liste des prêts
-        function loadLoans() {
-            ajax("GET", "/stats/liste-prets", null, function(response) {
-                const tbody = document.getElementById('loanTableBody');
-                tbody.innerHTML = '';
 
                 const dateDebut = document.getElementById('dateDebut').value;
                 const dateFin = document.getElementById('dateFin').value;
 
-                ajax("GET", `/stats/somme-interets?dateDebut=${encodeURIComponent(dateDebut)}&dateFin=${encodeURIComponent(dateFin)}`, null, function(response) {
+                ajax("GET", `/etablissement/etat?dateDebut=${encodeURIComponent(dateDebut)}&dateFin=${encodeURIComponent(dateFin)}`, null, function (response) {
                     const tbody = document.getElementById('interestTableBody');
                     tbody.innerHTML = '';
 
                     if (response.length > 0) {
                         response.forEach(row => {
-                            const totalMontant = parseFloat(row.total_interets || 0) + parseFloat(row.total_capital || 0);
+                            const totalMontant = parseFloat(row.total_interets) + parseFloat(row.total_capital);
                             const tr = document.createElement('tr');
                             tr.innerHTML = `
                                 <td>${row.annee}</td>
                                 <td>${row.mois}</td>
-                                <td>${parseFloat(row.reste_non_emprunte || 0).toLocaleString('fr-FR')} Ar</td>
-                                <td>${parseFloat(row.total_interets || 0).toLocaleString('fr-FR')} Ar</td>
-                                <td>${parseFloat(row.total_capital || 0).toLocaleString('fr-FR')} Ar</td>
-                                <td>${totalMontant.toLocaleString('fr-FR')} Ar</td>
+                                <td class="montant">${parseFloat(row.fonds_initial).toLocaleString('fr-FR')}</td>                                 
+                                <td class="montant">${parseFloat(row.prets_accordes).toLocaleString('fr-FR')}</td>                                
+                                <td class="montant">${parseFloat(row.reste_non_emprunte).toLocaleString('fr-FR')}</td>
+                                <td class="montant">${parseFloat(row.total_interet).toLocaleString('fr-FR')}</td>
+                                <td class="montant">${parseFloat(row.total_capital).toLocaleString('fr-FR')}</td>
+                                <td class="montant">${parseFloat(row.montant_total).toLocaleString('fr-FR')}</td>
                             `;
-                            tbody.appendChild(tr);
+                            tbody.appendChild(tr); // ✅ AJOUT DU TR AU TABLEAU
                         });
+
                     } else {
                         const tr = document.createElement('tr');
-                        tr.innerHTML = '<td colspan="6" class="no-data">Aucune donnée disponible</td>';
+                        tr.innerHTML = '<td colspan="5" class="no-data">Aucune donnée disponible</td>';
                         tbody.appendChild(tr);
                     }
                 });
             })
         };
 
-        // Charger la sidebar dynamiquement
-        function loadSidebar() {
-            ajax("GET", "../sidebar.html", null, function(response) {
-                document.getElementById('sidebar-placeholder').innerHTML = response;
-                setupSidebar();
-            });
-        }
-
-        // Configurer la navigation de la sidebar
-        function setupSidebar() {
-            document.querySelectorAll('.sidebar a').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    // Ajouter la logique de navigation si nécessaire
-                });
-            });
-        }
-        // Charger les prêts au démarrage
-        document.addEventListener('DOMContentLoaded', loadLoans);
-    </script>
-
         // Initialisation
-        document.addEventListener('DOMContentLoaded', function() {
-            loadSidebar();
-            loadData();
+        document.addEventListener('DOMContentLoaded', function () {
+            loadRemboursements();
         });
     </script>
 </body>
