@@ -68,13 +68,15 @@ class PDF extends FPDF
         $loanInfo = [
             'Identifiant du pret' => $data['Identifiant du pret'],
             'Type du pret' => $data['Type du pret'],
-            'Montant du pret' => number_format($data['Montant du pret'], 0, ',', ' ') . ' Ar',
+            'Delai de remboursement' => (isset($data['delai']) && $data['delai'] !== '') ? $data['delai'] . ' mois' : '0 mois',
+            'Assurance' => (isset($data['assurance']) && $data['assurance'] !== '') ? $data['assurance'] . ' %' : '0 %',
+            'Montant du pret' => number_format($data['Montant du pret'], 2, ',', ' ') . ' Ar',
             'Taux d\'interet' => $data['Taux d\'interet'] . ' %',
             'Duree du pret' => $data['Duree du pret'] . ' mois',
             'Date de debut' => $data['Date de debut'],
             'Date de fin' => $data['Date de fin'],
-            'Montant a rembourser' => number_format($data['Montant a rembourser'], 0, ',', ' ') . ' Ar',
-            'Montant mensuel' => number_format($data['Montant mensuel'], 0, ',', ' ') . ' Ar',
+            'Montant a rembourser' => number_format($data['Montant a rembourser'], 2, ',', ' ') . ' Ar',
+            'Montant mensuel' => number_format($data['Montant mensuel'], 2, ',', ' ') . ' Ar',
         ];
 
 
@@ -106,17 +108,13 @@ class PDF extends FPDF
         $totalInterets = 0;
         $totalCapital = 0;
 
-        $monthNames = [
-            1 => 'Janvier', 2 => 'Fevrier', 3 => 'Mars', 4 => 'Avril', 5 => 'Mai', 6 => 'Juin',
-            7 => 'Juillet', 8 => 'Août', 9 => 'Septembre', 10 => 'Octobre', 11 => 'Novembre', 12 => 'Decembre'
-        ];
-
         foreach ($payments as $payment) {
             $this->SetX(15);
             $this->Cell(30, 8, $payment['annee'], 1, 0, 'C');
-            $this->Cell(40, 8, $monthNames[$payment['mois']], 1, 0, 'C');
+            $this->Cell(40, 8, $payment['mois'], 1, 0, 'C');
             $this->Cell(40, 8, number_format($payment['interets'], 2, ',', ' '), 1, 0, 'R');
             $this->Cell(40, 8, number_format($payment['capital'], 2, ',', ' '), 1, 1, 'R');
+
             $totalInterets += $payment['interets'];
             $totalCapital += $payment['capital'];
         }
@@ -139,7 +137,7 @@ class PDF extends FPDF
     }
 }
 
-function createPDFClients($dataClients,$data_prets)
+function createPDFClients($dataClients, $data_prets)
 {
     $pdf = new PDF();
     $pdf->AliasNbPages();
@@ -150,5 +148,3 @@ function createPDFClients($dataClients,$data_prets)
     $pdf->NotesAndSignature();
     $pdf->Output();
 }
-
-

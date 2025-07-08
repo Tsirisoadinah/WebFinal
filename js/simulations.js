@@ -280,11 +280,6 @@ function displayComparisonResults(simulations) {
                     <div class="comparison-label">Date de fin</div>
                     <div class="comparison-value">${formatDate(sim.date_fin)}</div>
                 </div>
-                <div class="comparison-item">
-                    <a href="prets.html?sim=${sim.id}" class="btn btn-primary btn-sm" style="width: 100%;">
-                        <i class="fas fa-check"></i> Appliquer cette simulation
-                    </a>
-                </div>
             </div>
         `;
         

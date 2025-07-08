@@ -74,9 +74,12 @@ class Statistiques
                 tp.libelle AS type_pret,
                 p.montant_pret,
                 tp.taux,
-                p.delai AS duree,
+                p.delai,
                 p.date_pret AS date_debut,
                 p.date_fin,
+                TIMESTAMPDIFF(MONTH, p.date_pret, p.date_fin) AS duree,
+                p.delai,
+                p.assurance,
                 (p.montant_pret * (1 + (tp.taux/100))) AS montant_rembourser,
                 p.montant_mensuel,
                 c.id AS client_id,
@@ -106,6 +109,8 @@ class Statistiques
                 'Montant du pret' => $data['montant_pret'],
                 'Taux d\'interet' => $data['taux'],
                 'Duree du pret' => $data['duree'],
+                'delai' => $data['delai'],
+                'assurance' => $data['assurance'],
                 'Date de debut' => $data['date_debut'],
                 'Date de fin' => $data['date_fin'],
                 'Montant a rembourser' => $data['montant_rembourser'],
@@ -117,40 +122,11 @@ class Statistiques
     }
 
 
-    public static function getHistoriqueMensuelByPret($id_pret)
-    {
-        $db = getDB();
+public static function getDetailsPDFByPret($id_pret)
+{
+    $db = getDB();
 
-        $query = "
-            SELECT 
-                YEAR(date_paiement) AS annee,
-                MONTH(date_paiement) AS mois,
-                SUM(interet) AS interets,
-                SUM(capital) AS capital
-            FROM finance_Historique_Pret
-            WHERE id_pret = ?
-            GROUP BY annee, mois
-            ORDER BY annee, mois
-        ";
-
-        $stmt = $db->prepare($query);
-        $stmt->execute([$id_pret]);
-        $resultats = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // Optionnel : cast float (sinon renvoie string)
-        foreach ($resultats as &$row) {
-            $row['interets'] = floatval($row['interets']);
-            $row['capital'] = floatval($row['capital']);
-        }
-
-        return $resultats;
-    }
-
-        public static function getDetailsPDFByPret($id_pret)
-    {
-        $db = getDB();
-
-        $query = "
+    $query = "
         SELECT 
             date_paiement,
             capital,
@@ -160,41 +136,65 @@ class Statistiques
         ORDER BY date_paiement ASC
     ";
 
-        $stmt = $db->prepare($query);
-        $stmt->execute([$id_pret]);
-        $resultats = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $db->prepare($query);
+    $stmt->execute([$id_pret]);
+    $resultats = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $details = [];
-        $capitalRestant = 0;
+    $details = [];
 
-        // Calcul total initial du capital
-        foreach ($resultats as $row) {
-            $capitalRestant += floatval($row['capital']);
-        }
-
-        $mois = 1;
-        foreach ($resultats as $row) {
-            $datePaiement = DateTime::createFromFormat('Y-m-d', $row['date_paiement']);
-            $capital = floatval($row['capital']);
-            $interet = floatval($row['interet']);
-            $mensualite = $capital + $interet;
-
-            $capitalRestant -= $capital;
-
-            $details[] = [
-                'mois' => $mois,
-                'annee' => (int)$datePaiement->format('Y'),
-                'date' => $datePaiement->format('d/m/Y'),
-                'mensualite' => round($mensualite, 2),
-                'capital' => round($capital, 2),
-                'interets' => round($interet, 2),
-                'capital_restant' => round(max($capitalRestant, 0), 2)
-            ];
-
-            $mois++;
-        }
-
-        return $details;
+    // Calculer le capital total à rembourser
+    $capitalTotal = 0;
+    foreach ($resultats as $row) {
+        $capitalTotal += floatval($row['capital']);
     }
+    $capitalRestant = $capitalTotal;
+
+    // Préparer IntlDateFormatter pour le nom du mois en français
+    $fmt = null;
+    if (class_exists('IntlDateFormatter')) {
+        $fmt = new IntlDateFormatter('fr_FR', IntlDateFormatter::NONE, IntlDateFormatter::NONE);
+        $fmt->setPattern('MMMM'); // Nom complet du mois
+    }
+
+    foreach ($resultats as $row) {
+        try {
+            $datePaiement = DateTime::createFromFormat('Y-m-d', $row['date_paiement'], new DateTimeZone('UTC'));
+            if ($datePaiement === false) {
+                throw new Exception("Date invalide: " . $row['date_paiement']);
+            }
+        } catch (Exception $e) {
+            error_log("Erreur de date pour id_pret {$id_pret}: " . $e->getMessage());
+            continue;
+        }
+
+        $capital = floatval($row['capital']);
+        $interet = floatval($row['interet']);
+        $mensualite = $capital + $interet;
+        $capitalRestant -= $capital;
+
+        if ($fmt !== null) {
+            $moisNom = ucfirst($fmt->format($datePaiement));
+        } else {
+            // Fallback
+            $moisNom = ucfirst(
+                (function_exists('strftime')) 
+                ? strftime('%B', $datePaiement->getTimestamp()) 
+                : $datePaiement->format('F')
+            );
+        }
+
+        $details[] = [
+            'mois' => $moisNom,
+            'annee' => (int) $datePaiement->format('Y'),
+            'date' => $datePaiement->format('d/m/Y'),
+            'mensualite' => round($mensualite, 2),
+            'capital' => round($capital, 2),
+            'interets' => round($interet, 2),
+            'capital_restant' => round(max($capitalRestant, 0), 2),
+        ];
+    }
+
+    return $details;
+}
 
 }
