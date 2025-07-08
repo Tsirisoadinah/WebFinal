@@ -248,13 +248,32 @@
 
         // Charger les données des remboursements et reste non emprunté
         function loadData() {
-            document.getElementById('interetForm').addEventListener('submit', function(event) {
-                event.preventDefault();
+                    document.getElementById('interetForm').addEventListener('submit', function(event) {
+                        event.preventDefault();
+
+                function genererPDF(pretId) {
+            // Open the PDF generation URL in a new tab/window
+            window.open(`http://localhost/WebFinal/ws/create-pdf?pretId=${pretId}`, '_blank');
+        }
 
         function genererPDF(pretId) {
-    // Open the PDF generation URL in a new tab/window
-    window.open(`http://localhost/WebFinal/ws/create-pdf?pretId=${pretId}`, '_blank');
-}
+            const url = `${apiBase}/create-pdf?pretId=${pretId}`;
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", url, true);
+            xhr.responseType = "blob"; // Pour recevoir le PDF
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    const blob = new Blob([xhr.response], { type: "application/pdf" });
+                    const link = document.createElement("a");
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = `recapitulatif_pret_${pretId}.pdf`;
+                    link.click();
+                } else {
+                    //alert("Erreur lors de la génération du PDF.");
+                }
+            };
+            xhr.send();
+        }
 
         // Charger la liste des prêts
         function loadLoans() {
