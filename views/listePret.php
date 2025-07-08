@@ -251,6 +251,17 @@
             document.getElementById('interetForm').addEventListener('submit', function(event) {
                 event.preventDefault();
 
+        function genererPDF(pretId) {
+    // Open the PDF generation URL in a new tab/window
+    window.open(`http://localhost/WebFinal/ws/create-pdf?pretId=${pretId}`, '_blank');
+}
+
+        // Charger la liste des prêts
+        function loadLoans() {
+            ajax("GET", "/stats/liste-prets", null, function(response) {
+                const tbody = document.getElementById('loanTableBody');
+                tbody.innerHTML = '';
+
                 const dateDebut = document.getElementById('dateDebut').value;
                 const dateFin = document.getElementById('dateFin').value;
 
@@ -298,6 +309,9 @@
                 });
             });
         }
+        // Charger les prêts au démarrage
+        document.addEventListener('DOMContentLoaded', loadLoans);
+    </script>
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
