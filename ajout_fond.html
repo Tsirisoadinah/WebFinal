@@ -160,7 +160,7 @@
         function chargerFonds() { 
             ajax("GET", "/etablissement/fonds", null, (data) => {
                 const solde = document.querySelector("#solde-valeur");
-                solde.innerText = `${data} €`;
+                solde.innerText = `${data} Ar`;
             });
         }
     </script>
