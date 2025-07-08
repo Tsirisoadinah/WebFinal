@@ -22,7 +22,7 @@ function formatPercent(value) {
 // Chargement de la sidebar
 document.addEventListener('DOMContentLoaded', function() {
     // Charger la sidebar
-    fetch('sidebar.html')
+    fetch('../views/sidebar.html')
         .then(response => response.text())
         .then(data => {
             document.getElementById('sidebar-container').innerHTML = data;
