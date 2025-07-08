@@ -65,3 +65,10 @@ CREATE TABLE finance_Client_Pret (
    FOREIGN KEY(id_client) REFERENCES finance_Clients(id),
    FOREIGN KEY(id_pret) REFERENCES finance_Pret(id)
 );
+
+CREATE TABLE finance_Simulation(
+   id INTEGER PRIMARY KEY AUTO_INCREMENT,
+   libelle VARCHAR(50),
+   id_pret INTEGER,
+   FOREIGN KEY(id_pret) REFERENCES finance_Pret(id)
+);
