@@ -3,38 +3,58 @@
 <head>
   <meta charset="UTF-8">
   <title>Gestion des étudiants</title>
-  <style>
-    body { font-family: sans-serif; padding: 20px; }
-    input, button { margin: 5px; padding: 5px; }
-    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-    th { background-color: #f2f2f2; }
-  </style>
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
+  <?php include('sidebar.html'); ?>
+  
+  <div class="content">
+      <div class="container">
+        <button onclick="genererPDF()">Générer PDF</button>
 
-  <h1>Gestion des étudiants</h1>
+        <h1>Gestion des étudiants</h1>
 
-  <div>
-    <input type="hidden" id="id">
-    <input type="text" id="nom" placeholder="Nom">
-    <input type="text" id="prenom" placeholder="Prénom">
-    <input type="email" id="email" placeholder="Email">
-    <input type="number" id="age" placeholder="Âge">
-    <button onclick="ajouterOuModifier()">Ajouter / Modifier</button>
+        <div class="form-section">
+          <input type="hidden" id="id">
+          <input type="text" id="nom" placeholder="Nom">
+          <input type="text" id="prenom" placeholder="Prénom">
+          <input type="email" id="email" placeholder="Email">
+          <input type="number" id="age" placeholder="Âge">
+          <button onclick="ajouterOuModifier()">Ajouter / Modifier</button>
+        </div>
+
+        <table id="table-etudiants">
+          <thead>
+            <tr>
+              <th>ID</th><th>Nom</th><th>Prénom</th><th>Email</th><th>Âge</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
   </div>
-
-  <table id="table-etudiants">
-    <thead>
-      <tr>
-        <th>ID</th><th>Nom</th><th>Prénom</th><th>Email</th><th>Âge</th><th>Actions</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
 
   <script>
     const apiBase = "http://localhost/WebFinal/ws";
+
+    function genererPDF() {
+      const url = `${apiBase}/create-pdf`;
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", url, true);
+      xhr.responseType = "blob"; // Pour recevoir le PDF
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          const blob = new Blob([xhr.response], { type: "application/pdf" });
+          const link = document.createElement("a");
+          link.href = window.URL.createObjectURL(blob);
+          link.download = "etudiants.pdf";
+          link.click();
+        } else {
+          // alert("Erreur lors de la génération du PDF.");
+        }
+      };
+      xhr.send();
+    }
 
     function ajax(method, url, data, callback) {
       const xhr = new XMLHttpRequest();
@@ -72,9 +92,9 @@
 
     function ajouterOuModifier() {
       const id = document.getElementById("id").value;
-      const nom = document.getElementById("nom").value;
-      const prenom = document.getElementById("prenom").value;
-      const email = document.getElementById("email").value;
+      const nom = document.getElementById("nom").value.trim();
+      const prenom = document.getElementById("prenom").value.trim();
+      const email = document.getElementById("email").value.trim();
       const age = document.getElementById("age").value;
 
       const data = `nom=${encodeURIComponent(nom)}&prenom=${encodeURIComponent(prenom)}&email=${encodeURIComponent(email)}&age=${age}`;

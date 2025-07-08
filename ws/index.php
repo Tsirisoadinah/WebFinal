@@ -2,10 +2,13 @@
 require 'vendor/autoload.php';
 require 'db.php';
 require 'routes/etudiant_routes.php';
+require 'routes/TypePret_routes.php';
 require 'routes/etablissement_routes.php';
 require 'routes/pret_routes.php';
 require 'routes/client_routes.php';
 require 'routes/type_pret_routes.php';
+require 'routes/stats_routes.php';
+require 'routes/pdf_routes.php';
 
 // Activer CORS pour permettre les requêtes depuis le frontend
 Flight::route('*', function(){
